@@ -18,3 +18,7 @@ Simple run `just` to execute default build, unit-testing.
 `docker-compose up` - to run mongo, mongo-express and go service(it builds go service from docker file).
 
 `docker build -t {tag}` . - to build docker file. 
+
+### TODO
+
+ CI/CD, k8s, linting
