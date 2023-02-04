@@ -70,7 +70,7 @@ func run() error {
 }
 
 func runMonitor(service *monitor.Service) error {
-	ctx, cancelF := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancelF := context.WithTimeout(context.Background(), 2*time.Second) // TODO: move to cfg
 	defer cancelF()
 
 	res, err := service.Monitor(ctx)
