@@ -21,21 +21,22 @@ func TestServiceMonitor(t *testing.T) {
 		repo := mock.NewMockRepository(ctrl)
 		client := mock.NewMockGoogleClient(ctrl)
 
-		repo.EXPECT().InsertRequestRes(gomock.Any(), monitor.RequestResult{Code: 200}).Return(nil)
-		client.EXPECT().MakeGetRequest(gomock.Any()).Return(monitor.RequestResult{Code: 200}, nil)
+		repo.EXPECT().InsertRequestRes(gomock.Any(), monitor.MonitorResult{Code: 200}).Return(nil)
+		client.EXPECT().MakeGetRequest(gomock.Any()).Return(monitor.MonitorResult{Code: 200}, nil)
 
 		service := monitor.NewService(client, repo)
-		err := service.Monitor(context.Background())
+		res, err := service.Monitor(context.Background())
 		assert.NoError(t, err)
+		assert.Equal(t, 200, res.Code)
 	})
 	t.Run("client returns error", func(t *testing.T) {
 		repo := mock.NewMockRepository(ctrl)
 		client := mock.NewMockGoogleClient(ctrl)
 
-		client.EXPECT().MakeGetRequest(gomock.Any()).Return(monitor.RequestResult{}, io.EOF)
+		client.EXPECT().MakeGetRequest(gomock.Any()).Return(monitor.MonitorResult{}, io.EOF)
 
 		service := monitor.NewService(client, repo)
-		err := service.Monitor(context.Background())
+		_, err := service.Monitor(context.Background())
 		require.NotNil(t, err)
 		assert.Equal(t, fmt.Errorf("failed to make get request: %w", io.EOF), err)
 	})
@@ -43,11 +44,11 @@ func TestServiceMonitor(t *testing.T) {
 		repo := mock.NewMockRepository(ctrl)
 		client := mock.NewMockGoogleClient(ctrl)
 
-		client.EXPECT().MakeGetRequest(gomock.Any()).Return(monitor.RequestResult{Code: 200}, nil)
-		repo.EXPECT().InsertRequestRes(gomock.Any(), monitor.RequestResult{Code: 200}).Return(io.EOF)
+		client.EXPECT().MakeGetRequest(gomock.Any()).Return(monitor.MonitorResult{Code: 200}, nil)
+		repo.EXPECT().InsertRequestRes(gomock.Any(), monitor.MonitorResult{Code: 200}).Return(io.EOF)
 
 		service := monitor.NewService(client, repo)
-		err := service.Monitor(context.Background())
+		_, err := service.Monitor(context.Background())
 		require.NotNil(t, err)
 		assert.Equal(t, fmt.Errorf("failed to insert request result: %w", io.EOF), err)
 	})

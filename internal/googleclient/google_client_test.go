@@ -23,7 +23,7 @@ func TestClientMakeGetRequest(t *testing.T) {
 		c := NewClient(http.DefaultClient, url)
 		got, err := c.MakeGetRequest(context.Background())
 		require.NoError(t, err)
-		assert.Equal(t, http.StatusOK, got)
+		assert.Equal(t, http.StatusOK, got.Code)
 	})
 
 	t.Run("internal server error", func(t *testing.T) {
@@ -36,6 +36,6 @@ func TestClientMakeGetRequest(t *testing.T) {
 		c := NewClient(http.DefaultClient, url)
 		got, err := c.MakeGetRequest(context.Background())
 		require.NoError(t, err)
-		assert.Equal(t, http.StatusInternalServerError, got)
+		assert.Equal(t, http.StatusInternalServerError, got.Code)
 	})
 }

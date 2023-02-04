@@ -7,14 +7,14 @@ import (
 )
 
 type GoogleClient interface {
-	MakeGetRequest(ctx context.Context) (RequestResult, error)
+	MakeGetRequest(ctx context.Context) (MonitorResult, error)
 }
 
 type Repository interface {
-	InsertRequestRes(ctx context.Context, res RequestResult) error
+	InsertRequestRes(ctx context.Context, res MonitorResult) error
 }
 
-type RequestResult struct {
+type MonitorResult struct {
 	Code int
 }
 
@@ -31,15 +31,15 @@ func NewService(client GoogleClient, repo Repository) *Service {
 }
 
 // Monitor makes request to client and store the API result.
-// It assumes we dont wont to store error.
-func (s *Service) Monitor(ctx context.Context) error {
+// It assumes we don't want to store error.
+func (s *Service) Monitor(ctx context.Context) (MonitorResult, error) {
 	res, err := s.client.MakeGetRequest(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to make get request: %w", err)
+		return MonitorResult{}, fmt.Errorf("failed to make get request: %w", err)
 	}
 	err = s.repo.InsertRequestRes(ctx, res)
 	if err != nil {
-		return fmt.Errorf("failed to insert request result: %w", err)
+		return MonitorResult{}, fmt.Errorf("failed to insert request result: %w", err)
 	}
-	return nil
+	return res, nil
 }

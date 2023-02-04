@@ -20,7 +20,7 @@ func NewMongo(collection *mongo.Collection) *Mongo {
 	}
 }
 
-func (m *Mongo) InsertRequestRes(ctx context.Context, res monitor.RequestResult) error {
+func (m *Mongo) InsertRequestRes(ctx context.Context, res monitor.MonitorResult) error {
 	_, err := m.collection.InsertOne(ctx, bson.M{"code": res.Code})
 	if err != nil {
 		return fmt.Errorf("failed to insert res: %w", err)

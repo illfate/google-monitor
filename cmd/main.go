@@ -3,8 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
@@ -58,9 +61,22 @@ func run() error {
 	googleClient := googleclient.NewClient(httpClient, cfg.GoogleURL)
 
 	service := monitor.NewService(googleClient, repo)
-	err = service.Monitor(context.TODO())
+	err = runMonitor(service)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func runMonitor(service *monitor.Service) error {
+	res, err := service.Monitor(context.TODO())
 	if err != nil {
 		return fmt.Errorf("failed to run monitor: %w", err)
+	}
+	msg := fmt.Sprintf("code is %d", res.Code)
+	_, err = io.Copy(os.Stdout, strings.NewReader(msg))
+	if err != nil {
+		return fmt.Errorf("failed to output result: %w", err)
 	}
 	return nil
 }

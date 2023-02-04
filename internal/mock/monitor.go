@@ -36,10 +36,10 @@ func (m *MockGoogleClient) EXPECT() *MockGoogleClientMockRecorder {
 }
 
 // MakeGetRequest mocks base method.
-func (m *MockGoogleClient) MakeGetRequest(ctx context.Context) (monitor.RequestResult, error) {
+func (m *MockGoogleClient) MakeGetRequest(ctx context.Context) (monitor.MonitorResult, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MakeGetRequest", ctx)
-	ret0, _ := ret[0].(monitor.RequestResult)
+	ret0, _ := ret[0].(monitor.MonitorResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -74,7 +74,7 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // InsertRequestRes mocks base method.
-func (m *MockRepository) InsertRequestRes(ctx context.Context, res monitor.RequestResult) error {
+func (m *MockRepository) InsertRequestRes(ctx context.Context, res monitor.MonitorResult) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "InsertRequestRes", ctx, res)
 	ret0, _ := ret[0].(error)

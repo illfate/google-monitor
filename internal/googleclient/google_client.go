@@ -24,18 +24,18 @@ func NewClient(client *http.Client, baseURL string) *Client {
 }
 
 // MakeGetRequest makes get request to passed google url and returns status code.
-func (c *Client) MakeGetRequest(ctx context.Context) (monitor.RequestResult, error) {
+func (c *Client) MakeGetRequest(ctx context.Context) (monitor.MonitorResult, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURl, http.NoBody)
 	if err != nil {
-		return monitor.RequestResult{}, fmt.Errorf("failed to create a request: %w", err)
+		return monitor.MonitorResult{}, fmt.Errorf("failed to create a request: %w", err)
 	}
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return monitor.RequestResult{}, fmt.Errorf("failed to make request: %w", err)
+		return monitor.MonitorResult{}, fmt.Errorf("failed to make request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	reqRes := monitor.RequestResult{
+	reqRes := monitor.MonitorResult{
 		Code: resp.StatusCode,
 	}
 	return reqRes, nil
