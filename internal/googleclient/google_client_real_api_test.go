@@ -15,5 +15,5 @@ func TestRealClientMakeGetRequest(t *testing.T) {
 	c := NewClient(http.DefaultClient, "https://google.com")
 	got, err := c.MakeGetRequest(context.Background())
 	require.NoError(t, err)
-	assert.Equal(t, http.StatusOK, got)
+	assert.Equal(t, http.StatusOK, got.Code)
 }

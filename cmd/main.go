@@ -13,6 +13,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 
 	"github.com/illfate/google-monitor/internal/googleclient"
 	"github.com/illfate/google-monitor/internal/monitor"
@@ -55,7 +56,7 @@ func run() error {
 	collection := client.Database(cfg.MongoDatabase).Collection(cfg.MongoCollection)
 	repo := repository.NewMongo(collection)
 	httpClient := &http.Client{
-		Timeout: time.Second,
+		Timeout: 3 * time.Second,
 	}
 
 	googleClient := googleclient.NewClient(httpClient, cfg.GoogleURL)
@@ -69,11 +70,14 @@ func run() error {
 }
 
 func runMonitor(service *monitor.Service) error {
-	res, err := service.Monitor(context.TODO())
+	ctx, cancelF := context.WithTimeout(context.Background(), time.Second)
+	defer cancelF()
+
+	res, err := service.Monitor(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to run monitor: %w", err)
 	}
-	msg := fmt.Sprintf("code is %d", res.Code)
+	msg := fmt.Sprintf("code is %d\n", res.Code)
 	_, err = io.Copy(os.Stdout, strings.NewReader(msg))
 	if err != nil {
 		return fmt.Errorf("failed to output result: %w", err)
@@ -87,6 +91,13 @@ func connectToMongo(uri string) (*mongo.Client, error) {
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
+	}
+
+	pingCtx, pingCancelF := context.WithTimeout(context.Background(), 2*time.Second)
+	defer pingCancelF()
+	err = client.Ping(pingCtx, readpref.Primary())
+	if err != nil {
+		return nil, fmt.Errorf("failed to ping: %w", err)
 	}
 	return client, nil
 }

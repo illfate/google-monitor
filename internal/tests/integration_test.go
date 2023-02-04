@@ -6,6 +6,7 @@ import (
 	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/jarcoal/httpmock"
 	"github.com/kelseyhightower/envconfig"
@@ -35,7 +36,10 @@ func TestMonitor(t *testing.T) {
 	googleClient := googleclient.NewClient(http.DefaultClient, cfg.GoogleURL)
 
 	service := monitor.NewService(googleClient, repo)
-	res, err := service.Monitor(context.Background())
+	ctx, cancelF := context.WithTimeout(context.Background(), time.Second)
+	defer cancelF()
+
+	res, err := service.Monitor(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, 200, res.Code)
 
