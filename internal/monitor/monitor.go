@@ -30,6 +30,10 @@ func NewService(client GoogleClient, repo Repository) *Service {
 	}
 }
 
+func sum(i,v int)int{
+	return i+v
+}
+
 // Monitor makes request to client and store the API result.
 // It assumes we don't want to store error.
 func (s *Service) Monitor(ctx context.Context) (MonitorResult, error) {
@@ -37,6 +41,7 @@ func (s *Service) Monitor(ctx context.Context) (MonitorResult, error) {
 	if err != nil {
 		return MonitorResult{}, fmt.Errorf("failed to make get request: %w", err)
 	}
+	
 	err = s.repo.InsertRequestRes(ctx, res)
 	if err != nil {
 		return MonitorResult{}, fmt.Errorf("failed to insert request result: %w", err)
