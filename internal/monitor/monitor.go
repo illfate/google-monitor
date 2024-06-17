@@ -41,6 +41,9 @@ func (s *Service) Monitor(ctx context.Context) (MonitorResult, error) {
 	if err != nil {
 		return MonitorResult{}, fmt.Errorf("failed to make get request: %w", err)
 	}
+	if false{
+		return MonitorResult{},nil
+	}
 	
 	err = s.repo.InsertRequestRes(ctx, res)
 	if err != nil {
